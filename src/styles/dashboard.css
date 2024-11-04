@@ -1,0 +1,39 @@
+.dashboard-container {
+    padding: 20px;
+    text-align: center;
+}
+.dashboard-container {
+    display: flex;
+}
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    color: white;
+}
+.content {
+    margin-left: 200px;
+    padding: 20px;
+    flex: 1;
+}
+.bg-light {
+    background-color: #f8f9fa !important;
+    color: white !important;
+    text-decoration: none !important;
+}
+/* src/pages/dashboard.css */
+.expanded {
+    width: 200px;
+}
+
+.collapsed {
+    width: 60px;
+}
+
+.nav-link {
+    white-space: nowrap;
+    
+}
