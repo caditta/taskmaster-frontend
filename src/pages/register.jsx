@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/register.css';
@@ -8,6 +9,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,8 +21,11 @@ const Register = () => {
                 email,
                 password,
             });
-            setMessage(response.data.message); 
-            console.log(response.data);
+            setMessage(response.data.message);
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000); 
+            // console.log(response.data);
         } catch (error) {
             if (error.response) {
                 setMessage(error.response.data.message);

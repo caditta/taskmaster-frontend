@@ -29,8 +29,9 @@ const Login = () => {
             setIsError(false);
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
-                dispatch(setAuth({ isAuthenticated: true, role: response.data.role }));
+                localStorage.setItem('userId', response.data.userId);
                 dispatch(setAuth(true)); // Establecer autenticación a true
+                dispatch(setAuth({ isAuthenticated: true, role: response.data.role }));
                 navigate('/dashboard');
             } else {
                 setMessage('No se recibió el token del servidor');
@@ -44,6 +45,7 @@ const Login = () => {
             }
             setIsError(true);
         }
+        
     };
 
     return (

@@ -3,15 +3,21 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+// import ListTask from './ListTask'; // Asegúrate de que el nombre del archivo es correcto
+import CreateTask from './createTask'; // Importar el componente para crear tareas
 
 const Dashboard = () => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-    const userRole = useSelector((state) => state.auth.userRole); // Obtener el rol del usuario
+    const userRole = useSelector((state) => state.auth.userRole);
     const navigate = useNavigate();
-    const [isMenuExpanded, setIsMenuExpanded] = useState(true); // Estado para controlar el menú
+    const [isMenuExpanded, setIsMenuExpanded] = useState(true);
+    const [activeTab, setActiveTab] = useState('home');
+    const [isSubMenuVisible, setIsSubMenuVisible] = useState(false);
+    const [showCreateTask, setShowCreateTask] = useState(false); // Estado para mostrar el formulario de crear tarea
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Elimina el token al cerrar sesión
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId'); // Elimina el token al cerrar sesión
         navigate('/login');
     };
 
@@ -19,9 +25,29 @@ const Dashboard = () => {
         setIsMenuExpanded(!isMenuExpanded);
     };
 
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'tasks':
+                // return <ListTask />; // Renderiza el componente de gestión de tareas
+            case 'createTask':
+                return <CreateTask onClose={() => setShowCreateTask(false)} />; // Muestra el formulario para crear tarea
+            case 'home':
+            default:
+                return <h1>Bienvenido al Dashboard</h1>;
+        }
+    };
+
+    const goToHome = () => {
+        setActiveTab('home');
+        navigate('/dashboard');
+    };
+
+    const toggleSubMenu = () => {
+        setIsSubMenuVisible(!isSubMenuVisible);
+    };
+
     return (
         <div className="d-flex">
-            {/* Menú lateral visible solo si el usuario está autenticado */}
             {isAuthenticated && (
                 <div
                     className={`bg-light p-3 vh-100 ${isMenuExpanded ? 'expanded' : 'collapsed'}`}
@@ -32,18 +58,42 @@ const Dashboard = () => {
                     </button>
                     <h4 className={`text-center ${isMenuExpanded ? '' : 'd-none'}`}>Dashboard</h4>
                     <ul className="nav flex-column">
-                        {userRole === 'admin' && ( // Mostrar solo para administradores
+                        <li className="nav-item">
+                            <button className="nav-link" onClick={goToHome}>
+                                {isMenuExpanded ? 'Inicio' : '🏠'}
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className="nav-link btn btn-link text-start" onClick={toggleSubMenu}>
+                                {isMenuExpanded ? 'Gestionar Tareas' : '📋'}
+                            </button>
+                            {isSubMenuVisible && (
+                                <ul className="nav flex-column ms-3">
+                                    <li className="nav-item">
+                                        <button className="nav-link" onClick={() => { setShowCreateTask(true); setActiveTab('createTask'); }}>
+                                            {isMenuExpanded ? 'Crear Tarea' : '➕'}
+                                        </button>
+                                    </li>
+                                    <li className="nav-item">
+                                        <button className="nav-link" onClick={() => { setActiveTab('tasks'); }}>
+                                            {isMenuExpanded ? 'Visualizar Tareas' : '👁️'}
+                                        </button>
+                                    </li>
+                                </ul>
+                            )}
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" href="#perfil">
+                                {isMenuExpanded ? 'Perfil' : '👤'}
+                            </a>
+                        </li>
+                        {userRole === 'admin' && (
                             <li className="nav-item">
                                 <a className="nav-link" href="#configuracion">
                                     {isMenuExpanded ? 'Configuración' : '⚙️'}
                                 </a>
                             </li>
                         )}
-                        <li className="nav-item">
-                            <a className="nav-link" href="#tareas">
-                                {isMenuExpanded ? 'Tareas' : '📋'}
-                            </a>
-                        </li>
                         <li className="nav-item">
                             <button className="nav-link btn btn-link text-start" onClick={handleLogout}>
                                 {isMenuExpanded ? 'Logout' : '🚪'}
@@ -53,10 +103,8 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Contenido principal del Dashboard */}
             <div className="p-4" style={{ flex: 1 }}>
-                <h1>Dashboard</h1>
-                {isAuthenticated ? <p>Usuario autenticado</p> : <p>No autenticado</p>}
+                {showCreateTask ? <CreateTask onClose={() => setShowCreateTask(false)} /> : renderContent()}
             </div>
         </div>
     );
