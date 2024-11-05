@@ -7,6 +7,7 @@ import CreateTask from './createTask';
 import Categories from './Categories';
 import TaskList from './TaskList';
 import UserProfile from './UserProfile';
+import UserList from './UserList'; // Nuevo componente para listar usuarios
 
 const Dashboard = () => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -15,6 +16,7 @@ const Dashboard = () => {
     const [isMenuExpanded, setIsMenuExpanded] = useState(true);
     const [activeTab, setActiveTab] = useState('home');
     const [isSubMenuVisible, setIsSubMenuVisible] = useState(false);
+    const [isConfigMenuVisible, setIsConfigMenuVisible] = useState(false); // Nuevo estado para el menú de configuración
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -35,7 +37,9 @@ const Dashboard = () => {
             case 'categories':
                 return <Categories />;
             case 'profile':
-                    return <UserProfile />;
+                return <UserProfile />;
+            case 'users':  // Componente para gestionar usuarios
+                return <UserList />;
             case 'home':
             default:
                 return <h1>Bienvenido al Dashboard</h1>;
@@ -51,6 +55,10 @@ const Dashboard = () => {
         setIsSubMenuVisible(!isSubMenuVisible);
     };
 
+    const toggleConfigMenu = () => {
+        setIsConfigMenuVisible(!isConfigMenuVisible); // Manejar la visibilidad del menú de configuración
+    };
+
     return (
         <div className="d-flex">
             {isAuthenticated && (
@@ -59,12 +67,12 @@ const Dashboard = () => {
                     style={{
                         width: isMenuExpanded ? '200px' : '80px',
                         transition: 'width 0.3s',
-                        position: 'fixed',         // Fija el menú
+                        position: 'fixed',
                         top: 0,
                         left: 0,
-                        height: '100vh',           // Ocupa toda la altura de la pantalla
-                        zIndex: 1000,              // Coloca el menú en la parte superior
-                        overflowY: 'auto'          // Permite scroll si el menú es largo
+                        height: '100vh',
+                        zIndex: 1000,
+                        overflowY: 'auto'
                     }}
                 >
                     <button className="btn btn-primary mb-3" onClick={toggleMenu}>
@@ -102,15 +110,24 @@ const Dashboard = () => {
                             )}
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" onClick={() => setActiveTab('profile')}>
-                            {isMenuExpanded ? 'Perfil' : '👤'}
-                            </a>
+                            <button className="nav-link" onClick={() => setActiveTab('profile')}>
+                                {isMenuExpanded ? 'Perfil' : '👤'}
+                            </button>
                         </li>
                         {userRole === 'admin' && (
                             <li className="nav-item">
-                                <a className="nav-link" href="#configuracion">
+                                <button className="nav-link btn btn-link text-start" onClick={toggleConfigMenu}>
                                     {isMenuExpanded ? 'Configuración' : '⚙️'}
-                                </a>
+                                </button>
+                                {isConfigMenuVisible && (
+                                    <ul className="nav flex-column ms-3">
+                                        <li className="nav-item">
+                                            <button className="nav-link" onClick={() => { setActiveTab('users'); }}>
+                                                {isMenuExpanded ? 'Usuarios' : '👤'}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                )}
                             </li>
                         )}
                         <li className="nav-item">
