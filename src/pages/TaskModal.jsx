@@ -75,7 +75,9 @@ const TaskModal = ({ task, onClose, onTaskUpdated }) => {
                         </button>
                     </div>
                     <div className="modal-body">
+                        <p>Titulo:</p>
                         <h5>{task.title}</h5>
+                        <p>Descripcion</p>
                         <p>{task.description}</p>
                         <h6>Asignado a: {task.assigned_name || 'No asignado'}</h6>
                         <h6>Creado por: {task.created_by_name || 'Desconocido'}</h6>

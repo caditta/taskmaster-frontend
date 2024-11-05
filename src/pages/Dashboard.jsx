@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import CreateTask from './createTask';
 import Categories from './Categories';
 import TaskList from './TaskList';
+import UserProfile from './UserProfile';
 
 const Dashboard = () => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -33,6 +34,8 @@ const Dashboard = () => {
                 return <CreateTask onClose={() => setActiveTab('home')} />;
             case 'categories':
                 return <Categories />;
+            case 'profile':
+                    return <UserProfile />;
             case 'home':
             default:
                 return <h1>Bienvenido al Dashboard</h1>;
@@ -99,8 +102,8 @@ const Dashboard = () => {
                             )}
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#perfil">
-                                {isMenuExpanded ? 'Perfil' : '👤'}
+                            <a className="nav-link" onClick={() => setActiveTab('profile')}>
+                            {isMenuExpanded ? 'Perfil' : '👤'}
                             </a>
                         </li>
                         {userRole === 'admin' && (
