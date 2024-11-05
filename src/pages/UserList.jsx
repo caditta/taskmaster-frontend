@@ -12,6 +12,8 @@ const UserList = () => {
     const [editingUser, setEditingUser] = useState(null); // Estado para manejar el usuario a editar
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState(''); // Campo para el rol
+    const [isActive, setIsActive] = useState(true); // Campo para el estado activo
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -62,12 +64,14 @@ const UserList = () => {
         setEditingUser(user);
         setUsername(user.username);
         setPassword(''); // Limpiar el campo de contraseña
+        setRole(user.role); // Establecer el rol
+        setIsActive(user.is_active); // Establecer el estado activo
     };
 
     const handleUpdateUser = async (e) => {
         e.preventDefault();
         try {
-            const updatedUser = { username, password };
+            const updatedUser = { username, password, role, is_active: isActive };
 
             const response = await axios.put(`http://localhost:5000/api/users/users/${editingUser.id}`, updatedUser, {
                 headers: {
@@ -79,7 +83,7 @@ const UserList = () => {
                 setAlertMessage('Usuario actualizado correctamente');
                 setAlertType('success');
                 // Actualizamos la lista de usuarios con los nuevos datos
-                setUsers(users.map(user => user.id === editingUser.id ? { ...user, username, password: password || editingUser.password } : user));
+                setUsers(users.map(user => user.id === editingUser.id ? { ...user, username, password: password || editingUser.password, role, is_active: isActive } : user));
                 setEditingUser(null); // Cerrar el modal
             }
         } catch (err) {
@@ -116,6 +120,8 @@ const UserList = () => {
                         <th>ID</th>
                         <th>Nombre de Usuario</th>
                         <th>Correo Electrónico</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -125,6 +131,8 @@ const UserList = () => {
                             <td>{user.id}</td>
                             <td>{user.username}</td>
                             <td>{user.email}</td>
+                            <td>{user.role}</td>
+                            <td>{user.is_active ? 'Activo' : 'Inactivo'}</td>
                             <td>
                                 <button onClick={() => handleEditUser(user)} className="btn btn-warning me-2">
                                     Editar
@@ -170,6 +178,30 @@ const UserList = () => {
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="Dejar vacío para no cambiar"
                                         />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="role" className="form-label">Rol</label>
+                                        <select
+                                            id="role"
+                                            className="form-control"
+                                            value={role}
+                                            onChange={(e) => setRole(e.target.value)}
+                                        >
+                                            <option value="admin">Admin</option>
+                                            <option value="user">User</option>
+                                        </select>
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="isActive" className="form-label">Estado</label>
+                                        <select
+                                            className="form-control"
+                                            id="isActive"
+                                            value={isActive}
+                                            onChange={(e) => setIsActive(e.target.value === 'true')}
+                                        >
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
                                     </div>
                                     <button type="submit" className="btn btn-primary">Actualizar</button>
                                 </form>
