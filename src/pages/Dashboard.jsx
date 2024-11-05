@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import CreateTask from './createTask'; // Importar el componente para crear tareas
-import Categories from './Categories'; // Importar el componente para gestionar categorías
+import CreateTask from './createTask';
+import Categories from './Categories';
+import TaskList from './TaskList';
 
 const Dashboard = () => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -13,11 +14,10 @@ const Dashboard = () => {
     const [isMenuExpanded, setIsMenuExpanded] = useState(true);
     const [activeTab, setActiveTab] = useState('home');
     const [isSubMenuVisible, setIsSubMenuVisible] = useState(false);
-    const [showCreateTask, setShowCreateTask] = useState(false); // Estado para mostrar el formulario de crear tarea
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('userId'); // Elimina el token al cerrar sesión
+        localStorage.removeItem('userId');
         navigate('/login');
     };
 
@@ -28,12 +28,11 @@ const Dashboard = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'tasks':
-                // return <ListTask />; // Renderiza el componente de gestión de tareas
-                break; // Agrega un break aquí
+                return <TaskList />;
             case 'createTask':
-                return <CreateTask onClose={() => setShowCreateTask(false)} />; // Muestra el formulario para crear tarea
+                return <CreateTask onClose={() => setActiveTab('home')} />;
             case 'categories':
-                return <Categories />; // Muestra el componente para gestionar categorías
+                return <Categories />;
             case 'home':
             default:
                 return <h1>Bienvenido al Dashboard</h1>;
@@ -53,8 +52,17 @@ const Dashboard = () => {
         <div className="d-flex">
             {isAuthenticated && (
                 <div
-                    className={`bg-light p-3 vh-100 ${isMenuExpanded ? 'expanded' : 'collapsed'}`}
-                    style={{ width: isMenuExpanded ? '200px' : '80px', transition: 'width 0.3s' }}
+                    className={`bg-light p-3 ${isMenuExpanded ? 'expanded' : 'collapsed'}`}
+                    style={{
+                        width: isMenuExpanded ? '200px' : '80px',
+                        transition: 'width 0.3s',
+                        position: 'fixed',         // Fija el menú
+                        top: 0,
+                        left: 0,
+                        height: '100vh',           // Ocupa toda la altura de la pantalla
+                        zIndex: 1000,              // Coloca el menú en la parte superior
+                        overflowY: 'auto'          // Permite scroll si el menú es largo
+                    }}
                 >
                     <button className="btn btn-primary mb-3" onClick={toggleMenu}>
                         {isMenuExpanded ? '⬅️' : '➡️'}
@@ -73,7 +81,7 @@ const Dashboard = () => {
                             {isSubMenuVisible && (
                                 <ul className="nav flex-column ms-3">
                                     <li className="nav-item">
-                                        <button className="nav-link" onClick={() => { setShowCreateTask(true); setActiveTab('createTask'); }}>
+                                        <button className="nav-link" onClick={() => { setActiveTab('createTask'); }}>
                                             {isMenuExpanded ? 'Crear Tarea' : '➕'}
                                         </button>
                                     </li>
@@ -111,8 +119,8 @@ const Dashboard = () => {
                 </div>
             )}
 
-            <div className="p-4" style={{ flex: 1 }}>
-                {showCreateTask ? <CreateTask onClose={() => setShowCreateTask(false)} /> : renderContent()}
+            <div className="p-4" style={{ flex: 1, marginLeft: isMenuExpanded ? '200px' : '80px', transition: 'margin-left 0.3s' }}>
+                {renderContent()}
             </div>
         </div>
     );

@@ -32,7 +32,7 @@ const CreateTask = ({ onClose }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/categories');
+                const response = await axios.get('http://localhost:5000/api/categories/enabled');
                 setCategories(response.data);
             } catch (error) {
                 console.error('Error al obtener las categorías:', error);
@@ -45,8 +45,15 @@ const CreateTask = ({ onClose }) => {
         e.preventDefault();
         setMessage('');
 
+        // Asegúrate de que todos los campos requeridos estén llenos
+        if (!title || assignedTo.length === 0 || !dueDate || !priority || !category) {
+            setMessage('Por favor completa todos los campos requeridos.');
+            return;
+        }
+
         try {
             const token = localStorage.getItem('token');
+            const createdBy = localStorage.getItem('userId'); // Obtén el ID del usuario desde localStorage
             await axios.post(
                 'http://localhost:5000/api/tasks',
                 {
@@ -55,7 +62,8 @@ const CreateTask = ({ onClose }) => {
                     assignedTo,
                     dueDate,
                     priority,
-                    category, // Enviar la categoría seleccionada
+                    category,
+                    createdBy, // Incluye el campo createdBy
                 },
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -72,7 +80,11 @@ const CreateTask = ({ onClose }) => {
             setCategory('');
         } catch (error) {
             console.error('Error al crear la tarea:', error);
-            setMessage('Error al crear la tarea. Verifica los datos ingresados.');
+            if (error.response) {
+                setMessage(`Error: ${error.response.data.message}`); // Mensaje de error del servidor
+            } else {
+                setMessage('Error al crear la tarea. Verifica los datos ingresados.');
+            }
         }
     };
 

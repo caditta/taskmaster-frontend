@@ -13,6 +13,7 @@
     left: 0;
     overflow-y: auto;
     color: white;
+    position: fixed
 }
 .content {
     margin-left: 200px;
