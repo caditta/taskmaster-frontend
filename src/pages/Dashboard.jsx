@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import ListTask from './ListTask'; // Asegúrate de que el nombre del archivo es correcto
 import CreateTask from './createTask'; // Importar el componente para crear tareas
+import Categories from './Categories'; // Importar el componente para gestionar categorías
 
 const Dashboard = () => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -29,8 +29,11 @@ const Dashboard = () => {
         switch (activeTab) {
             case 'tasks':
                 // return <ListTask />; // Renderiza el componente de gestión de tareas
+                break; // Agrega un break aquí
             case 'createTask':
                 return <CreateTask onClose={() => setShowCreateTask(false)} />; // Muestra el formulario para crear tarea
+            case 'categories':
+                return <Categories />; // Muestra el componente para gestionar categorías
             case 'home':
             default:
                 return <h1>Bienvenido al Dashboard</h1>;
@@ -77,6 +80,11 @@ const Dashboard = () => {
                                     <li className="nav-item">
                                         <button className="nav-link" onClick={() => { setActiveTab('tasks'); }}>
                                             {isMenuExpanded ? 'Visualizar Tareas' : '👁️'}
+                                        </button>
+                                    </li>
+                                    <li className="nav-item">
+                                        <button className="nav-link" onClick={() => { setActiveTab('categories'); }}>
+                                            {isMenuExpanded ? 'Categorías' : '📁'}
                                         </button>
                                     </li>
                                 </ul>
