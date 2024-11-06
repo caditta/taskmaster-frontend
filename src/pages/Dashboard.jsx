@@ -7,7 +7,8 @@ import CreateTask from './createTask';
 import Categories from './Categories';
 import TaskList from './TaskList';
 import UserProfile from './UserProfile';
-import UserList from './UserList'; // Nuevo componente para listar usuarios
+import UserList from './UserList';
+import AdminTaskManager from './AdminTaskManager'; // Nuevo componente para administrar tareas
 
 const Dashboard = () => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -16,11 +17,12 @@ const Dashboard = () => {
     const [isMenuExpanded, setIsMenuExpanded] = useState(true);
     const [activeTab, setActiveTab] = useState('home');
     const [isSubMenuVisible, setIsSubMenuVisible] = useState(false);
-    const [isConfigMenuVisible, setIsConfigMenuVisible] = useState(false); // Nuevo estado para el menú de configuración
+    const [isConfigMenuVisible, setIsConfigMenuVisible] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
+        localStorage.removeItem('role');
         navigate('/login');
     };
 
@@ -38,8 +40,10 @@ const Dashboard = () => {
                 return <Categories />;
             case 'profile':
                 return <UserProfile />;
-            case 'users':  // Componente para gestionar usuarios
+            case 'users':
                 return <UserList />;
+            case 'adminTasks':  // Nueva opción para administrar tareas
+                return <AdminTaskManager />;
             case 'home':
             default:
                 return <h1>Bienvenido al Dashboard</h1>;
@@ -56,7 +60,7 @@ const Dashboard = () => {
     };
 
     const toggleConfigMenu = () => {
-        setIsConfigMenuVisible(!isConfigMenuVisible); // Manejar la visibilidad del menú de configuración
+        setIsConfigMenuVisible(!isConfigMenuVisible);
     };
 
     return (
@@ -124,6 +128,11 @@ const Dashboard = () => {
                                         <li className="nav-item">
                                             <button className="nav-link" onClick={() => { setActiveTab('users'); }}>
                                                 {isMenuExpanded ? 'Usuarios' : '👤'}
+                                            </button>
+                                        </li>
+                                        <li className="nav flex-column ms-3"> 
+                                            <button className="nav-link" onClick={() => { setActiveTab('adminTasks'); }}>
+                                                {isMenuExpanded ? 'Administrar Tareas' : '🛠️'}
                                             </button>
                                         </li>
                                     </ul>

@@ -1,4 +1,3 @@
-// src/pages/UserList.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -9,11 +8,11 @@ const UserList = () => {
     const [error, setError] = useState('');
     const [alertMessage, setAlertMessage] = useState('');
     const [alertType, setAlertType] = useState('');
-    const [editingUser, setEditingUser] = useState(null); // Estado para manejar el usuario a editar
+    const [editingUser, setEditingUser] = useState(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState(''); // Campo para el rol
-    const [isActive, setIsActive] = useState(true); // Campo para el estado activo
+    const [role, setRole] = useState(''); // Updated to handle role changes
+    const [isActive, setIsActive] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,24 +47,18 @@ const UserList = () => {
                 setAlertType('success');
                 setUsers(users.filter(user => user.id !== id));
             }
-
         } catch (err) {
-            if (err.response && err.response.data.message) {
-                setAlertMessage(err.response.data.message);
-                setAlertType('danger');
-            } else {
-                setAlertMessage('Error al eliminar el usuario.');
-                setAlertType('danger');
-            }
+            setAlertMessage('Error al eliminar el usuario.');
+            setAlertType('danger');
         }
     };
 
     const handleEditUser = (user) => {
         setEditingUser(user);
         setUsername(user.username);
-        setPassword(''); // Limpiar el campo de contraseña
-        setRole(user.role); // Establecer el rol
-        setIsActive(user.is_active); // Establecer el estado activo
+        setPassword('');
+        setRole(user.role || 'user'); // Set default role if none is provided
+        setIsActive(user.is_active);
     };
 
     const handleUpdateUser = async (e) => {
@@ -73,7 +66,7 @@ const UserList = () => {
         try {
             const updatedUser = { username, password, role, is_active: isActive };
 
-            const response = await axios.put(`http://localhost:5000/api/users/users/${editingUser.id}`, updatedUser, {
+            const response = await axios.put(`http://localhost:5000/api/users/${editingUser.id}`, updatedUser, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -82,9 +75,8 @@ const UserList = () => {
             if (response.status === 200) {
                 setAlertMessage('Usuario actualizado correctamente');
                 setAlertType('success');
-                // Actualizamos la lista de usuarios con los nuevos datos
-                setUsers(users.map(user => user.id === editingUser.id ? { ...user, username, password: password || editingUser.password, role, is_active: isActive } : user));
-                setEditingUser(null); // Cerrar el modal
+                setUsers(users.map(user => user.id === editingUser.id ? { ...user, username, role, is_active: isActive } : user));
+                setEditingUser(null);
             }
         } catch (err) {
             setAlertMessage('Error al actualizar el usuario.');
@@ -92,7 +84,6 @@ const UserList = () => {
         }
     };
 
-    // Redirigir a la lista de usuarios después de mostrar la alerta
     useEffect(() => {
         if (alertMessage) {
             setTimeout(() => {
@@ -146,7 +137,6 @@ const UserList = () => {
                 </tbody>
             </table>
 
-            {/* Modal para editar usuario */}
             {editingUser && (
                 <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
                     <div className="modal-dialog">

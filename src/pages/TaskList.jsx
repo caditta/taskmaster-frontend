@@ -16,12 +16,31 @@ const TaskList = () => {
 
     const fetchTasks = async () => {
         const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role'); // Obtén el rol del usuario desde localStorage
+        const userId = localStorage.getItem('userId'); // Obtén el userId desde localStorage
+
+        if (!token || !role || !userId) {
+            console.error("Faltan datos en el localStorage (token, role, userId)");
+            return; // Salimos si falta algún dato
+        }
+
         try {
             const response = await axios.get('http://localhost:5000/api/tasks', {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setTasks(response.data);
-            setFilteredTasks(response.data); // Puedes cambiar esto si necesitas filtrar inicialmente
+
+            // Filtra las tareas dependiendo del rol
+            let filteredTasks = response.data;
+            if (role !== 'admin') { // Si el usuario no es admin, filtra las tareas por el assigned_to
+                
+                filteredTasks = filteredTasks.filter(tasks => tasks.assigned_to === userId); 
+            
+            }
+
+            console.log('Tareas obtenidas:', filteredTasks);
+            setTasks(filteredTasks);
+            setFilteredTasks(filteredTasks); // Actualiza las tareas filtradas
+
         } catch (error) {
             console.error('Error al obtener tareas:', error);
         }
@@ -42,11 +61,13 @@ const TaskList = () => {
         handleCloseModal(); // Cierra el modal
     };
 
+    // Filtrar las tareas por su estado
     const filterTasks = (status) => {
         const filtered = tasks.filter(task => task.status === status);
         setFilteredTasks(filtered);
     };
 
+    // Renderizar las tarjetas de tareas según el estado
     const renderTaskCards = (status) => {
         const tasksToRender = filteredTasks.filter(task => task.status === status);
 
@@ -75,6 +96,7 @@ const TaskList = () => {
         );
     };
 
+    // Renderizar tareas vencidas
     const renderExpiredTasks = () => {
         const now = new Date();
         const expiredTasks = tasks.filter(task => new Date(task.due_date) < now); // Filtra tareas vencidas

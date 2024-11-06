@@ -96,6 +96,7 @@ const UserProfile = () => {
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        required
                     />
                 </div>
                 <div className="mb-3">
@@ -106,6 +107,7 @@ const UserProfile = () => {
                         id="newPassword"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
+                        required
                     />
                 </div>
                 <div className="mb-3">
@@ -116,6 +118,7 @@ const UserProfile = () => {
                         id="confirmPassword"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Actualizar Perfil</button>

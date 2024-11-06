@@ -7,7 +7,7 @@ const CreateTask = ({ onClose }) => {
     const [assignedTo, setAssignedTo] = useState([]);
     const [dueDate, setDueDate] = useState('');
     const [priority, setPriority] = useState('');
-    const [category, setCategory] = useState(''); // Nueva categoría seleccionada
+    const [category, setCategory] = useState(''); // Almacenar category_id
     const [users, setUsers] = useState([]);
     const [categories, setCategories] = useState([]); // Lista de categorías
     const [message, setMessage] = useState('');
@@ -62,8 +62,8 @@ const CreateTask = ({ onClose }) => {
                     assignedTo,
                     dueDate,
                     priority,
-                    category,
-                    createdBy, // Incluye el campo createdBy
+                    category_id: category, // Enviar category_id al backend
+                    createdBy,
                 },
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -164,13 +164,13 @@ const CreateTask = ({ onClose }) => {
                     <select
                         id="category"
                         value={category}
-                        onChange={(e) => setCategory(e.target.value)}
+                        onChange={(e) => setCategory(e.target.value)} // category_id
                         className="form-control"
                         required
                     >
                         <option value="">Selecciona una categoría</option>
                         {categories.map((cat) => (
-                            <option key={cat.id} value={cat.name}>
+                            <option key={cat.id} value={cat.id}> {/* Usar cat.id como value */}
                                 {cat.name}
                             </option>
                         ))}
